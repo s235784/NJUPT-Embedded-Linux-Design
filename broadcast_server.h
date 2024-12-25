@@ -24,7 +24,7 @@ public:
     void on_message(const websocketpp::connection_hdl& hdl, const websocketpp::server<websocketpp::config::asio>::message_ptr& msg);
 
     // 向所有客户端发送加速度数据
-    void send_accelerate(float& x, float& y, float& z);
+    void send_accelerate(double& x, double& y, double& z);
 
     // 启动服务器
     void run(uint16_t port);

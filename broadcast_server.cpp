@@ -57,7 +57,7 @@ void broadcast_server::on_message(const connection_hdl& hdl, const server::messa
 }
 
 // 向所有客户端发送加速度数据
-void broadcast_server::send_accelerate(float& x, float& y, float& z) {
+void broadcast_server::send_accelerate(double& x, double& y, double& z) {
     const std::string content = fmt::format("({:.3f},{:.3f},{:.3f});", x, y, z);
     for (const auto& m_connection : m_connections) {
         try {
