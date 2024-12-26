@@ -41,5 +41,6 @@ find_package(SQLite3 REQUIRED)
 # === program_design ===
 add_executable(program_design
         main.cpp
+        broadcast_server.cpp
 )
-target_link_libraries(program_design SQLite::SQLite3)
+target_link_libraries(program_design Websockets fmt::fmt SQLite::SQLite3)
