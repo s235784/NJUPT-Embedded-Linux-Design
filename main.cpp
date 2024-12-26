@@ -4,8 +4,10 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <errno.h>
+#include <iostream>
 # include <string.h>
 #include <thread>
+#include <sqlite3.h>
 
 
 unsigned char Address[5];
@@ -286,7 +288,61 @@ void print_prompt()
 	printf (">");
 }
 
+sqlite3* db;
+const std::string dbName = "data.db";
+
+bool init_sqlite() {
+	char* errMsg = nullptr;
+	int rc;
+
+	rc = sqlite3_open(dbName.c_str(), &db);
+	if (rc) {
+		std::cerr << "can't open: " << sqlite3_errmsg(db) << std::endl;
+		return false;
+	}
+
+	std::string sql = "CREATE TABLE IF NOT EXISTS SensorData ("
+		"ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+		"Humidity REAL NOT NULL, "
+		"Temperature REAL NOT NULL, "
+		"Time TEXT NOT NULL);";
+	rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg);
+	if (rc != SQLITE_OK) {
+		std::cerr << errMsg << std::endl;
+		sqlite3_free(errMsg);
+		sqlite3_close(db);
+		return false;
+	}
+	std::cout << "Table Created Successes." << std::endl;
+	return true;
+}
+
+bool insertSensorData(float humidity, float temperature) {
+	char* errMsg = nullptr;  //用于存储错误信息
+
+	//准备插入数据的SQL语句
+	std::string sql = "INSERT INTO SensorData (Humidity, Temperature, Time) VALUES (" +
+					  std::to_string(humidity) + ", " +
+					  std::to_string(temperature) + ", " +
+						  "strftime('%Y-%m-%d %H:%M:%S', 'now'));";
+
+	int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg);
+	if (rc != SQLITE_OK) {
+		std::cerr << "mistake of inserting data : " << errMsg << std::endl;
+		sqlite3_free(errMsg);
+		sqlite3_close(db);
+		return false;
+	}
+	return true;
+}
+
+void close_sqlite() {
+	sqlite3_close(db);
+}
+
 int main() {
+	init_sqlite();
+
 	int CommFd;
 
 	struct termios TtyAttr;
@@ -355,10 +411,14 @@ int main() {
 
 					printf("Temperature: %.3f\n",temp);
 					printf("Humidity: %.3f\n",hum);
+
+					insertSensorData(hum, temp);
+
 					std::this_thread::sleep_for(std::chrono::milliseconds(500));
 				}
 			}
 		}
 	}
+	close_sqlite();
 	return 0;
 }

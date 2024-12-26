@@ -36,10 +36,10 @@ FetchContent_Declare(
         GIT_TAG        e69e5f977d458f2650bb346dadf2ad30c5320281) # 10.2.1
 FetchContent_MakeAvailable(fmt)
 
+find_package(SQLite3 REQUIRED)
+
 # === program_design ===
 add_executable(program_design
         main.cpp
-        broadcast_server.cpp
-        broadcast_server.h
 )
-target_link_libraries(program_design Websockets fmt::fmt)
+target_link_libraries(program_design SQLite::SQLite3)
