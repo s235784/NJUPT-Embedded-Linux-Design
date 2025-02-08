@@ -2,6 +2,33 @@
 
 课程代码 B0264041C
 
+## 使用方法
+
+由于试验箱的CPU架构限制，请在x86 Linux下交叉编译或直接在ARM Linux下编译。
+
+由于试验箱的glibc版本较低，在本地编译时请使用**Ubuntu 20.04及以下环境**。
+
+需要安装的依赖：
+- build-essential
+- cmake 3.26及以上版本
+- boost
+- SQLite3
+
+```Shell
+cd NJUPT-Embedded-Linux-Design
+mkdir build-linux
+cmake -B build-linux
+cmake --build build-linux
+```
+
+然后把build-linux目录下的`program_design`上传至试验箱的Linux内，运行
+
+```Shell
+./program_design
+```
+
+即可看到软件输出。
+
 ## main分支
 
 ### 任务
